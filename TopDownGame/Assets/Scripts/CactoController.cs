@@ -17,6 +17,7 @@ public class CactoController : MonoBehaviour
     public Transform pontoSpawnSpike;
 
     private bool enconstandoLança;
+    private bool morto;
     
 
     void Start()
@@ -27,6 +28,8 @@ public class CactoController : MonoBehaviour
         vidaAtual = vidaMax;
 
         enconstandoLança = false;
+
+        morto = false;
     }
 
     void Update()
@@ -35,14 +38,16 @@ public class CactoController : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position, player.transform.position, speed * Time.deltaTime);
         }
 
-        if(enconstandoLança == true)
-        {
-            vidaAtual--;
+        if(morto == false){
+            if(enconstandoLança == true)
+            {
+                vidaAtual--;
+            }
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision){
-
+        
         if(collision.CompareTag("Bullet")){
             TakeDamage(danoLevado);
 
@@ -56,7 +61,12 @@ public class CactoController : MonoBehaviour
                 
                 animator.SetTrigger("Dead");
                 isAlive = false;
-                Shoot();
+
+                if(morto == false){
+                    Shoot();
+                    morto = true;
+                }
+
                 Destroy(gameObject, 0.8f);
 
             }
@@ -78,7 +88,12 @@ public class CactoController : MonoBehaviour
                 
                 animator.SetTrigger("Dead");
                 isAlive = false;
-                Shoot();
+
+                if(morto == false){
+                    Shoot();
+                    morto = true;
+                }
+
                 Destroy(gameObject, 0.8f);
             }
         }else{
@@ -99,7 +114,12 @@ public class CactoController : MonoBehaviour
                 
                 animator.SetTrigger("Dead");
                 isAlive = false;
-                Shoot();
+                
+                if(morto == false){
+                    Shoot();
+                    morto = true;
+                }
+                
                 Destroy(gameObject, 0.8f);
 
             }
