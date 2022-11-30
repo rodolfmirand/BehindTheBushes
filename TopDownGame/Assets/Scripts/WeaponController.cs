@@ -53,7 +53,7 @@ public class WeaponController : MonoBehaviour
     public float tempAtualEscudo;
     private float vidaMaxEsc;
     public GameObject barraEscudo;
-    
+  
 
     void Start()
     {
@@ -64,6 +64,8 @@ public class WeaponController : MonoBehaviour
         
         vidaMaxEsc = escudo.GetComponent<Escudo>().vidaMaxEscudo;
         barraEscudo.SetActive(false);
+        
+        
     }
 
     void Update()
