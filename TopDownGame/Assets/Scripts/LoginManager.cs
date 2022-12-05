@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
 
 public class LoginManager : MonoBehaviour
 {
-
-    private const string Login = "Rodolfo";
-    private const string Pass = "102030";
 
     [SerializeField]
     private InputField usuarioField = null;
@@ -16,8 +14,10 @@ public class LoginManager : MonoBehaviour
     private InputField senhaField = null;
     [SerializeField]
     private Text feedBackMsg = null;
-    [SerializeField]
-    private Toggle rememberData = null;
+    //[SerializeField]
+    //private Toggle rememberData = null;
+
+    private string url = "http://localhost/login/login.php";
 
     void Start()
     {
@@ -30,8 +30,13 @@ public class LoginManager : MonoBehaviour
 
     public void FazerLogin()
     {
-        string usuario = usuarioField.text;
-        string senha = senhaField.text;
+        if(usuarioField.text == "" || senhaField.text == "")
+        {
+            FeedBackError("Preencha todos os campos.");
+
+        }else{
+            string usuario = usuarioField.text;
+            string senha = senhaField.text;
 
         /*if(rememberData.isOn)
         {
@@ -40,27 +45,59 @@ public class LoginManager : MonoBehaviour
             PlayerPrefs.SetString("rememberSenha",senha);
         }*/
 
-        if(usuario == Login && senha == Pass) 
-        {
-            feedBackMsg.CrossFadeAlpha(100f, 0f, false);
-            feedBackMsg.color = Color.green;
-            feedBackMsg.text = "Login realizado com sucesso!\nCarregando jogo...";
-            StartCoroutine(CarregandoCena());
+            /*if(usuario == Login && senha == Pass) 
+            {
+                FeedBackOk("Login realizado com sucesso!");
+                StartCoroutine(CarregandoCena());
+
+            }else{
+                FeedBackError("Nickname ou Senha inválidos.");
+            }*/
+
+            UnityWebRequest www = new UnityWebRequest(url + "?login=" + usuario + "&senha=" + senha); //http://localhost/login/login.php?login=xxxx&senha=xxxx
+            StartCoroutine(ValidaLogin(www));
+        }
+    }
+
+    IEnumerator ValidaLogin(UnityWebRequest www)
+    {
+        yield return www;
+        if(www.error == null){
+            if(www.downloadHandler.text == "1")
+            {
+                FeedBackOk("Login realizado com sucesso!\nCarregando jogo...");
+                StartCoroutine(CarregandoCena());
+            }else{
+                FeedBackError("Usuário ou Senha inválidos");
+            }
 
         }else{
-            feedBackMsg.CrossFadeAlpha(100f, 0f, false);
-            feedBackMsg.color = Color.red;
-            feedBackMsg.text = "Nickname ou Senha inválidos.";
-            feedBackMsg.CrossFadeAlpha(0f,2f,false);
-            usuarioField.text = "";
-            senhaField.text = "";
+            if(www.error == "couldn't connect to host")
+            {
+                FeedBackError("Servidor indisponível.");
+            }
         }
-        
     }
 
     IEnumerator CarregandoCena()
     {
         yield return new WaitForSeconds(3);
         SceneManager.LoadScene("Inicio");
+    }
+
+    void FeedBackOk(string mensagem)
+    {
+        feedBackMsg.CrossFadeAlpha(100f, 0f, false);
+        feedBackMsg.color = Color.green;
+        feedBackMsg.text = mensagem;
+    }
+    void FeedBackError(string mensagem)
+    {
+        feedBackMsg.CrossFadeAlpha(100f, 1f, false);
+        feedBackMsg.color = Color.red;
+        feedBackMsg.text = mensagem;
+        feedBackMsg.CrossFadeAlpha(0f,2f,false);
+        usuarioField.text = "";
+        senhaField.text = "";
     }
 }
