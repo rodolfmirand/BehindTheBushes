@@ -7,6 +7,9 @@ public class WeaponController : MonoBehaviour
 {
     SpriteRenderer sr;
 
+    [Header("Ponto das Particulas")]
+    public Transform pontoParticula;
+
     [Header("Shoot point")]
     public Transform spawnBullet;
 
@@ -39,7 +42,6 @@ public class WeaponController : MonoBehaviour
     public float cdAtualShotgun;
     public int quantidadeTiros;
     public ParticleSystem efeitoShotgun;
-    public Transform pontoParticula;
     public bool coolDownShotgun = false;
     bool shotgunAtivada = false;
     public GameObject Shotgun;
@@ -53,6 +55,14 @@ public class WeaponController : MonoBehaviour
     public float tempAtualEscudo;
     private float vidaMaxEsc;
     public GameObject barraEscudo;
+
+    [Header("Lança Granadas")]
+    public GameObject lancaGranada;
+    public float cdMaxLancaGranada;
+    public float cdAtualLancaGranada;
+    public int quantidadeTirosLancaGranada;
+    //public ParticleSystem efeioLancaGranada;
+    public GameObject LancaGranadaBullet;
   
 
     void Start()
@@ -152,6 +162,17 @@ public class WeaponController : MonoBehaviour
                 cdAtualChamas = cdMaxChamas;
 
             }     
+        }
+
+        if(Input.GetButtonDown("X")){
+            if(cdAtualLancaGranada <= 0){
+                if(quantidadeTirosLancaGranada > 0)
+                {
+                    Instantiate(LancaGranadaBullet, spawnBullet.position, transform.rotation);
+                    cdAtualLancaGranada = cdMaxLancaGranada;
+                    quantidadeTirosLancaGranada--;
+                }
+            }
         }
     }
 

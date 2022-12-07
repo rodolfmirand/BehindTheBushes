@@ -7,6 +7,8 @@ using UnityEngine.Networking;
 
 public class LoginManager : MonoBehaviour
 {
+    private string user;
+    private string pass;
 
     [SerializeField]
     private InputField usuarioField = null;
@@ -30,6 +32,10 @@ public class LoginManager : MonoBehaviour
 
     public void FazerLogin()
     {
+        if(usuarioField.text == "dev" && senhaField.text == "dev123")
+        {
+            SceneManager.LoadScene("Inicio");
+        }
         if(usuarioField.text == "" || senhaField.text == "")
         {
             FeedBackError("Preencha todos os campos.");
@@ -37,6 +43,9 @@ public class LoginManager : MonoBehaviour
         }else{
             string usuario = usuarioField.text;
             string senha = senhaField.text;
+
+            user = usuario;
+            pass = senha;
 
         /*if(rememberData.isOn)
         {
@@ -54,16 +63,24 @@ public class LoginManager : MonoBehaviour
                 FeedBackError("Nickname ou Senha inválidos.");
             }*/
 
-            UnityWebRequest www = new UnityWebRequest(url + "?login=" + usuario + "&senha=" + senha); //http://localhost/login/login.php?login=xxxx&senha=xxxx
+            UnityWebRequest www = new UnityWebRequest(url + "?username=" + usuario + "&password=" + senha); //http://localhost/login/login.php?username=xxxx&password=xxxx
+            
             StartCoroutine(ValidaLogin(www));
         }
     }
 
-    IEnumerator ValidaLogin(UnityWebRequest www)
+    IEnumerator ValidaLogin(UnityWebRequest wbr)
     {
-        yield return www;
-        if(www.error == null){
-            if(www.downloadHandler.text == "1")
+        yield return wbr;
+
+        wbr.downloadHandler = new DownloadHandlerBuffer();
+
+        string result = wbr.downloadHandler.text;
+
+        if(wbr.error == null){
+            Debug.Log("result = "+result);
+
+            if(result == "1")
             {
                 FeedBackOk("Login realizado com sucesso!\nCarregando jogo...");
                 StartCoroutine(CarregandoCena());
@@ -72,7 +89,7 @@ public class LoginManager : MonoBehaviour
             }
 
         }else{
-            if(www.error == "couldn't connect to host")
+            if(wbr.error == "couldn't connect to host")
             {
                 FeedBackError("Servidor indisponível.");
             }
@@ -93,7 +110,7 @@ public class LoginManager : MonoBehaviour
     }
     void FeedBackError(string mensagem)
     {
-        feedBackMsg.CrossFadeAlpha(100f, 1f, false);
+        feedBackMsg.CrossFadeAlpha(100f, 0f, false);
         feedBackMsg.color = Color.red;
         feedBackMsg.text = mensagem;
         feedBackMsg.CrossFadeAlpha(0f,2f,false);

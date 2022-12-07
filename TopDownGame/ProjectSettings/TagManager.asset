@@ -16,6 +16,7 @@ TagManager:
   - Spike
   - Escudo
   - batataAssada
+  - ExplosaoGranada
   layers:
   - Default
   - TransparentFX

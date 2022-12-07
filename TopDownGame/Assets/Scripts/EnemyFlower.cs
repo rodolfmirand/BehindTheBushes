@@ -33,7 +33,21 @@ public class EnemyFlower : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D collision){
+        
+        if(collision.CompareTag("ExplosaoGranada")){
+            
+            gameObject.tag = "DeadEnemy";
+            Destroy(transform.gameObject.GetComponent<BoxCollider2D>());
+            Destroy(transform.gameObject.GetComponent<Rigidbody2D>());
+                
+            GameManager.instance.AumentarPontuacao();
+                
+            animator.SetTrigger("Dead");
+            isAlive = false;
 
+            Destroy(gameObject, 0.4f);
+               
+        }
         if(collision.CompareTag("Bullet")){
             TakeDamage(damage);
 

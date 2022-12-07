@@ -68,11 +68,11 @@ public class PlayerLife : MonoBehaviour
             batatas++;
             txtBatatas.text = ""+batatas;
 
-            if(batatas >= batatasMinimoEscudo)
+            /*if(batatas >= batatasMinimoEscudo)
             {
                 escudo.SetActive(true);
                 iconeEscudo.SetActive(true);
-            }
+            }*/
         }
         if(collision.CompareTag("Enemy")){
             
@@ -123,7 +123,7 @@ public class PlayerLife : MonoBehaviour
 
             flowers++;
 
-            if(flowers >= floresMinimoLanca)
+            /*if(flowers >= floresMinimoLanca)
             {
                 iconeLancaChamas.SetActive(true);
                 lançaChamas.SetActive(true);
@@ -134,7 +134,7 @@ public class PlayerLife : MonoBehaviour
                 shotgunOn = true;
                 shotgun.SetActive(true);    
                 iconeShotgun.SetActive(true);
-            }
+            }*/
 
             txtFlores.text = ""+flowers;
         }

@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bullet : MonoBehaviour
+public class LançaGranadasBullet : MonoBehaviour
 {
     public float speed;
     public ParticleSystem effect;
     public float bulletLife;
-
+    public GameObject explosao;
 
     void Update()
     {
@@ -26,6 +26,8 @@ public class Bullet : MonoBehaviour
         if(collision.CompareTag("Enemy")){
             Instantiate(effect, transform.position, transform.rotation);
             Destroy(gameObject);
+
+            Instantiate(explosao, transform.position, transform.rotation);
 
             EnemyController enemy = collision.GetComponent<EnemyController>();
             
