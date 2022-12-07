@@ -164,6 +164,8 @@ public class WeaponController : MonoBehaviour
             }     
         }
 
+        cdAtualLancaGranada -= Time.deltaTime;
+        
         if(Input.GetButtonDown("X")){
             if(cdAtualLancaGranada <= 0){
                 if(quantidadeTirosLancaGranada > 0)
