@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     public int pontuacaoAtual;
 
     private bool isPaused;
+    public bool gameoverOn;
 
     void Awake(){
 
@@ -30,6 +31,8 @@ public class GameManager : MonoBehaviour
 
         pontuacaoAtual = 0;
         txtPontuacaoAtual.text = "PONTUAÇÂO: " + pontuacaoAtual;
+
+        gameoverOn = false;
     }
 
     // Update is called once per frame
@@ -37,7 +40,9 @@ public class GameManager : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Escape))
         {
-            PauseScreen();
+            if(gameoverOn == false){
+                PauseScreen();
+            }
         }
     }
 

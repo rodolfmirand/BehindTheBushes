@@ -9,9 +9,10 @@ public class CactoController : MonoBehaviour
     Animator animator;
     bool isAlive = true;
 
-    public int vidaMax;
-    public int vidaAtual;
-    public int danoLevado;
+    public float vidaMax;
+    public float vidaAtual;
+    public float danoLevado;
+    public float danoMinigun;
 
     public GameObject spike;
     public Transform pontoSpawnSpike;
@@ -61,6 +62,23 @@ public class CactoController : MonoBehaviour
             Destroy(gameObject, 0.4f);
                
         }
+        if(collision.CompareTag("MinigunBullet")){
+            TakeDamage(danoMinigun);
+
+            if(vidaAtual <= 0){
+                gameObject.tag = "DeadEnemy";
+                Destroy(transform.gameObject.GetComponent<BoxCollider2D>());
+                Destroy(transform.gameObject.GetComponent<Rigidbody2D>());
+                
+                GameManager.instance.AumentarPontuacao();
+                
+                animator.SetTrigger("Dead");
+                isAlive = false;
+
+                Destroy(gameObject, 0.4f);
+            }
+            
+        }
         if(collision.CompareTag("Bullet")){
             TakeDamage(danoLevado);
 
@@ -103,7 +121,7 @@ public class CactoController : MonoBehaviour
                 isAlive = false;
 
                 if(morto == false){
-                    Shoot();
+                    //Shoot();
                     morto = true;
                 }
 
@@ -140,7 +158,7 @@ public class CactoController : MonoBehaviour
     }
 
 
-    public void TakeDamage(int dmg){
+    public void TakeDamage(float dmg){  
 
         vidaAtual -= dmg;
     }

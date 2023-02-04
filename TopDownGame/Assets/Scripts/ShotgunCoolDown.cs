@@ -15,11 +15,13 @@ public class ShotgunCoolDown : MonoBehaviour
     public bool cdTiro;
     public float cdAtualTiro;
 
-
+    public AudioSource sgReaload;
+    public bool sgRealoadOn;
 
     void Start()
     {
         imageCoolDown.fillAmount = 0.0f;
+        sgRealoadOn= true;
     }
 
     void Update(){
@@ -33,16 +35,30 @@ public class ShotgunCoolDown : MonoBehaviour
         }
 
         if(isCooldown){
-            ApplyCooldown();
-        }
+            cooldownTimer -= Time.deltaTime;
 
+            if(sgRealoadOn)
+            {
+                sgReaload.Play();
+                sgRealoadOn = false;
+            }
+
+            if(cooldownTimer < 0.0f)
+            {
+                sgRealoadOn = true;
+                isCooldown = false;
+                imageCoolDown.fillAmount = 0.0f;
+            }else{
+                imageCoolDown.fillAmount =  cooldownTimer / cooldownTime;
+            }
+        }
     }
 
     void ApplyCooldown(){
         cooldownTimer -= Time.deltaTime;
 
         if(cooldownTimer < 0.0f){
-
+            
             isCooldown = false;
             imageCoolDown.fillAmount = 0.0f;
         }else{

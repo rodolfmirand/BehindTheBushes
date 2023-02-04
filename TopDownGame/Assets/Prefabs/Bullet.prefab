@@ -118,6 +118,9 @@ MonoBehaviour:
   speed: 50
   effect: {fileID: 2040419473858661585, guid: 1c20a3c38b6db9043be289684dbc810a, type: 3}
   bulletLife: 5
+  danoBullet: 1
+  enemy: {fileID: 5609560258665319714, guid: d7b9ab46ccf7ff84eaa319816673cd2c, type: 3}
+  enemyFruit: {fileID: 2583621761050287055, guid: cc3fa29628288cc43af21cd7e82e99df, type: 3}
 --- !u!50 &-2163366678839117766
 Rigidbody2D:
   serializedVersion: 4

@@ -24,6 +24,18 @@ public class LançaGranadasBullet : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision) {
         
         if(collision.CompareTag("Enemy")){
+
+            Instantiate(effect, transform.position, transform.rotation);
+            Destroy(gameObject);
+
+            Instantiate(explosao, transform.position, transform.rotation);
+
+            EnemyController enemy = collision.GetComponent<EnemyController>();
+            
+        }
+
+        if(collision.CompareTag("Cipo")){
+
             Instantiate(effect, transform.position, transform.rotation);
             Destroy(gameObject);
 
@@ -34,6 +46,7 @@ public class LançaGranadasBullet : MonoBehaviour
         }
 
         if(collision.CompareTag("EnemyFruit")){
+
             Instantiate(effect, transform.position, transform.rotation);
             Destroy(gameObject);
 
@@ -43,6 +56,7 @@ public class LançaGranadasBullet : MonoBehaviour
         }
 
         if(collision.CompareTag("FlowerEnemy")){
+ 
             Instantiate(effect, transform.position, transform.rotation);
             Destroy(gameObject);
 
@@ -51,6 +65,7 @@ public class LançaGranadasBullet : MonoBehaviour
         }
 
         if(collision.CompareTag("Map")){
+
             Instantiate(effect, transform.position, transform.rotation);
             Destroy(gameObject);           
             

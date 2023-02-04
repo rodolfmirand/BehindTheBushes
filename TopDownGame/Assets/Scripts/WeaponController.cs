@@ -26,7 +26,6 @@ public class WeaponController : MonoBehaviour
     public float cdMaxChamas;
     public float cdAtualChamas;
     public bool coolDown;
-    
 
     [Header("Shotgun shootpoint")]
     public Transform point1;
@@ -61,9 +60,37 @@ public class WeaponController : MonoBehaviour
     public float cdMaxLancaGranada;
     public float cdAtualLancaGranada;
     public int quantidadeTirosLancaGranada;
+    public Text txtGranada;
     //public ParticleSystem efeioLancaGranada;
     public GameObject LancaGranadaBullet;
-  
+    public bool coolDownLancaGranada = false;
+    public Transform granadaSpawn;
+    public bool granadaOn = false;
+
+    [Header("Minigun")]
+    public GameObject minigun;
+    public float cdMaxMinigun;
+    public float cdAtualMinigun;
+    public float tempMaxTiroMinigun;
+    public float tempAtualTiroMinigun;
+    public bool minigunOn = false;
+    public GameObject minigunBullet;
+    public int quantidadeTirosMinigun;
+    public int quantidadeMaxTirosMinigun;
+    public Text txtMinigun;
+    public ParticleSystem efeitoMinigun;
+    public MiniGunCoolDown miniguncd;
+
+    public bool tiroNormal = true;
+
+    [Header("Sons")]
+    public AudioSource LancadorGranada;
+    public AudioSource LancaChamas;
+    public AudioSource tiroPadrao;
+    public AudioSource somEscudo;
+    public AudioSource tiroShotgun;
+    public AudioClip[] tiroMinigun;
+    public AudioSource audioSource;
 
     void Start()
     {
@@ -71,6 +98,7 @@ public class WeaponController : MonoBehaviour
         lancaChamas.SetActive(false);
         fireObject.SetActive(false);  
         escudo.SetActive(false);
+        minigun.SetActive(false);
         
         vidaMaxEsc = escudo.GetComponent<Escudo>().vidaMaxEscudo;
         barraEscudo.SetActive(false);
@@ -85,6 +113,22 @@ public class WeaponController : MonoBehaviour
         ShotgunShoot();
         AtivarEscudo();
 
+        if(minigunOn == true)
+        {
+            if(miniguncd.minigunAtira == true)
+            {
+                if(Input.GetButtonDown("Z"))
+                {
+                    if(tiroNormal == true)
+                    {
+                        tiroNormal = false;
+                    }else{
+                        tiroNormal = true;
+                    }   
+                }
+            }
+        }
+        
         shotgunAtivada = Shotgun.GetComponent<PlayerLife>().shotgunOn;
 
         vidaEscudo = escudo.GetComponent<Escudo>().vidaAtualEscudo;
@@ -96,6 +140,8 @@ public class WeaponController : MonoBehaviour
             escudoAtivado = false;
             barraEscudo.SetActive(false);
         }
+
+        txtGranada.text = ""+ quantidadeTirosLancaGranada;
     }
 
     void AtivarEscudo()
@@ -112,6 +158,7 @@ public class WeaponController : MonoBehaviour
 
             if(tempAtualEscudo <= 0 && escudoAtivado == false)
             {   
+                somEscudo.Play();
                 barraEscudo.SetActive(true);
                 escudo.SetActive(true);
                 escudoAtivado = true;
@@ -121,13 +168,41 @@ public class WeaponController : MonoBehaviour
 
     void Shoot(){
         tempAtualTiro -= Time.deltaTime;
+        tempAtualTiroMinigun -= Time.deltaTime;
 
-        if(Input.GetButtonDown("Fire1")){
+        if(Input.GetButtonDown("Fire1"))
+        {
+            if(tiroNormal == true)
+            {
+                if(tempAtualTiro <= 0){
+                    Instantiate(bullet, spawnBullet.position, transform.rotation);
+                    tempAtualTiro = tempMaxTiro;
+                    tiroPadrao.Play();
+                }
+            }
+        }
+        if(Input.GetButton("Fire1")){
             
-            if(tempAtualTiro <= 0){
+            if(tiroNormal == false)
+            {
+                if(tempAtualTiroMinigun <= 0)
+                {
+                    if(miniguncd.minigunAtira == true)
+                    {
+                        audioSource.PlayOneShot(tiroMinigun[Random.Range(0,2)]);
+                        Instantiate(minigunBullet, spawnBullet.position, transform.rotation);
+                        Instantiate(efeitoMinigun, pontoParticula.position, pontoParticula.rotation);
+                        tempAtualTiroMinigun = tempMaxTiroMinigun;
+                        quantidadeTirosMinigun--;
+                        txtMinigun.text = ""+quantidadeTirosMinigun;
 
-                Instantiate(bullet, spawnBullet.position, transform.rotation);
-                tempAtualTiro = tempMaxTiro;
+                        if(quantidadeTirosMinigun <= 0)
+                        {
+                            //minigunOn = false;
+                            cdAtualMinigun = cdMaxMinigun;
+                        }
+                    }
+                }
             }
         }
   
@@ -151,6 +226,7 @@ public class WeaponController : MonoBehaviour
 
             if(cdAtualChamas <= 0){
 
+                LancaChamas.Play();
                 StartCoroutine(OnOff());
                 
                 coolDown = false;
@@ -166,13 +242,16 @@ public class WeaponController : MonoBehaviour
 
         cdAtualLancaGranada -= Time.deltaTime;
         
-        if(Input.GetButtonDown("X")){
+        if(Input.GetButtonDown("X") && granadaOn == true){
             if(cdAtualLancaGranada <= 0){
                 if(quantidadeTirosLancaGranada > 0)
                 {
-                    Instantiate(LancaGranadaBullet, spawnBullet.position, transform.rotation);
+                    LancadorGranada.Play();
+                    Instantiate(LancaGranadaBullet, granadaSpawn.position, transform.rotation);
                     cdAtualLancaGranada = cdMaxLancaGranada;
                     quantidadeTirosLancaGranada--;
+                    txtGranada.text = ""+ quantidadeTirosLancaGranada;
+                    coolDownLancaGranada = true;
                 }
             }
         }
@@ -196,6 +275,7 @@ public class WeaponController : MonoBehaviour
                 if(cdAtualShotgun <= 0 && quantidadeTiros > 0)
                 {
                     //efeitoShotgun.SetActive(true);
+                    tiroShotgun.Play();
                     Instantiate(efeitoShotgun, pontoParticula.position, pontoParticula.rotation);
 
                     Instantiate(shotgunBullet, point1.position, point1.rotation);

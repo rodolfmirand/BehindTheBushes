@@ -10,8 +10,9 @@ public class BatataController : MonoBehaviour
     Animator animator;
     bool isAlive = true;
 
-    public int health;
-    public int damage;
+    public float health;
+    public float damage;
+    public float danoMinigun;
 
     public static BoxCollider2D bc;
 
@@ -51,6 +52,23 @@ public class BatataController : MonoBehaviour
         }
         if(collision.CompareTag("Bullet")){
             TakeDamage(damage);
+
+            if(health <= 0){
+                gameObject.tag = "DeadEnemy";
+                Destroy(transform.gameObject.GetComponent<BoxCollider2D>());
+                Destroy(transform.gameObject.GetComponent<Rigidbody2D>());
+                
+                GameManager.instance.AumentarPontuacao();
+                
+                animator.SetTrigger("Dead");
+                isAlive = false;
+
+                Destroy(gameObject, 0.4f);
+            }
+            
+        }
+        if(collision.CompareTag("MinigunBullet")){
+            TakeDamage(danoMinigun);
 
             if(health <= 0){
                 gameObject.tag = "DeadEnemy";
@@ -128,7 +146,7 @@ public class BatataController : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int dmg){
+    public void TakeDamage(float dmg){
 
         health -= dmg;
     }

@@ -6,9 +6,26 @@ using UnityEngine.UI;
 public class PlayerLife : MonoBehaviour
 {
 
-    public static BoxCollider2D bc; 
+    public static PolygonCollider2D colisorGeral;
 
     public SpriteRenderer sprite;
+
+    public ParticleSystem efeitoCipo;
+
+    bool morreu = false;
+
+    public GameObject telaGameOver;
+
+    public AudioSource levandoDanoAudioSource;
+    public AudioClip[] levandoDano;
+    public AudioSource morrendo;
+
+    public Transform player;
+    
+    [Header("PlayerMove")]
+    public PlayerMove playerMove;
+
+    public WeaponController weapon;
 
     [Header("Vida, Dano causado por inimigos e Cura")]
     public int maxHealth = 100;
@@ -16,12 +33,18 @@ public class PlayerLife : MonoBehaviour
     public int damage;
     public int cure;
     public HealthBar healthBar;
+    public float segundosStunnado;
 
     [Header("Flores")]
-    public int flowers;
-    public int floresMinimoLanca;
-    public int floresMinimoShotgun;
+    public int flores;
+    //public int floresMinimoLanca;
+    //public int floresMinimoShotgun;
     public Text txtFlores;
+
+    [Header("Batatas")]
+    public int batatas;
+    //public int batatasMinimoEscudo;
+    public Text txtBatatas;
 
     [Header("Lança Chamas")]
     public GameObject lançaChamas;
@@ -36,19 +59,19 @@ public class PlayerLife : MonoBehaviour
     public GameObject escudo;
     public GameObject iconeEscudo;
 
-    [Header("Batatas")]
-    public int batatas;
-    public int batatasMinimoEscudo;
-    public Text txtBatatas;
+    [Header("Lança Granadas")]
+    public GameObject lancaGranada;
+    public GameObject iconeLancaGranada;
+
+    [Header("Minigun")]
+    public GameObject iconeMinigun;
 
     void Start()
     {
-        bc = GetComponent<BoxCollider2D>();
+        colisorGeral = GetComponent<PolygonCollider2D>();
 
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
-
-        flowers = 0;
 
         lançaChamas.SetActive(false);
         iconeLancaChamas.SetActive(false);
@@ -59,59 +82,56 @@ public class PlayerLife : MonoBehaviour
         escudo.SetActive(false);
         iconeEscudo.SetActive(false);
 
+        lancaGranada.SetActive(false);
+        iconeLancaGranada.SetActive(false);
+
+
+    }
+
+    private void Update() {
+        if(currentHealth <= 22){
+            
+            healthBar.SetHealth(currentHealth);
+            GameManager.instance.GameOver();
+            GameManager.instance.gameoverOn = true;
+            Debug.Log("Dead");
+            morreu = true;
+        }
+        if(morreu)
+        {
+            morrendo.Play();
+        }
+
+    
     }
 
     private void OnTriggerEnter2D(Collider2D collision){
-
-        if(collision.CompareTag("batataAssada"))
-        {
-            batatas++;
-            txtBatatas.text = ""+batatas;
-
-            /*if(batatas >= batatasMinimoEscudo)
-            {
-                escudo.SetActive(true);
-                iconeEscudo.SetActive(true);
-            }*/
-        }
         if(collision.CompareTag("Enemy")){
             
-            bc.enabled = false;
+            colisorGeral.enabled = false;
             StartCoroutine(DamagePlayer());
 
             TakeDamage(damage);
 
-            if(currentHealth <= 22){
-                GameManager.instance.GameOver();
-                Debug.Log("Dead");
-            }
+           
         }
-        /*if(collision.CompareTag("FlowerEnemy")){
+        if(collision.CompareTag("FlowerEnemy")){
             
-            bc.enabled = false;
+            colisorGeral.enabled = false;
             StartCoroutine(DamagePlayer());
 
             TakeDamage(damage);
-
-            if(currentHealth <= 22){
-                GameManager.instance.GameOver();
-                Debug.Log("Dead");
-            }
-        }*/
+            
+        }
 
         if(collision.CompareTag("Spike")){
             
-            bc.enabled = false;
+            colisorGeral.enabled = false;
             StartCoroutine(DamagePlayer());
 
             TakeDamage(damage);
-
-            if(currentHealth <= 22){
-                GameManager.instance.GameOver();
-                Debug.Log("Dead");
-            }
+            
         }
-
 
         if(collision.CompareTag("Fruit")){
 
@@ -119,26 +139,23 @@ public class PlayerLife : MonoBehaviour
 
         }
 
-        if(collision.CompareTag("Flower")){
-
-            flowers++;
-
-            /*if(flowers >= floresMinimoLanca)
-            {
-                iconeLancaChamas.SetActive(true);
-                lançaChamas.SetActive(true);
-            }
-
-            if(flowers >= floresMinimoShotgun)
-            {
-                shotgunOn = true;
-                shotgun.SetActive(true);    
-                iconeShotgun.SetActive(true);
-            }*/
-
-            txtFlores.text = ""+flowers;
+        if(collision.CompareTag("Cipo"))
+        {
+            
+            StartCoroutine(StunPlayer());
+            Instantiate(efeitoCipo, player.position, player.rotation);
         }
 
+    }
+
+    public IEnumerator StunPlayer()
+    {
+        playerMove.moveSpeed = 0;
+        
+        yield return new WaitForSeconds(segundosStunnado);
+        
+        playerMove.moveSpeed = playerMove.playerMoveSpeedMax;
+        
     }
 
     void TakeDamage(int dmg){
@@ -146,6 +163,12 @@ public class PlayerLife : MonoBehaviour
         currentHealth -= dmg;
 
         healthBar.SetHealth(currentHealth);
+
+        if(!telaGameOver.activeInHierarchy)
+        {
+            levandoDanoAudioSource.PlayOneShot(levandoDano[Random.Range(0,2)]);
+        }
+        
     }
 
     public void CureHealth(int cr){
@@ -175,12 +198,13 @@ public class PlayerLife : MonoBehaviour
             yield return new WaitForSeconds(0.15f);
         }
 
-        bc.enabled = true;
+        colisorGeral.enabled = true;
     }
 
     public void ModoCheat()
     {
         currentHealth = 10000;
+        healthBar.SetHealth(currentHealth);
         iconeLancaChamas.SetActive(true);
         lançaChamas.SetActive(true);
         shotgunOn = true;
@@ -188,5 +212,15 @@ public class PlayerLife : MonoBehaviour
         iconeShotgun.SetActive(true);
         escudo.SetActive(true);
         iconeEscudo.SetActive(true);
+        iconeLancaGranada.SetActive(true);
+        lancaGranada.SetActive(true);
+        weapon.granadaOn = true;
+        batatas +=100;
+        txtBatatas.text = ""+batatas;
+        flores+=100;
+        txtFlores.text = ""+flores;
+        iconeMinigun.SetActive(true);
+        weapon.minigunOn = true;
+        weapon.quantidadeTirosMinigun = weapon.quantidadeMaxTirosMinigun;
     }
 }

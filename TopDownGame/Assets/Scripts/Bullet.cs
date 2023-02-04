@@ -8,7 +8,6 @@ public class Bullet : MonoBehaviour
     public ParticleSystem effect;
     public float bulletLife;
 
-
     void Update()
     {
         transform.Translate(Vector3.right * Time.deltaTime * speed);
@@ -22,30 +21,12 @@ public class Bullet : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D collision) {
-        
+    
         if(collision.CompareTag("Enemy")){
+
             Instantiate(effect, transform.position, transform.rotation);
             Destroy(gameObject);
-
-            EnemyController enemy = collision.GetComponent<EnemyController>();
             
-        }
-
-        if(collision.CompareTag("EnemyFruit")){
-            Instantiate(effect, transform.position, transform.rotation);
-            Destroy(gameObject);
-
-            EnemyFruit enemy = collision.GetComponent<EnemyFruit>();
-            
-            
-        }
-
-        if(collision.CompareTag("FlowerEnemy")){
-            Instantiate(effect, transform.position, transform.rotation);
-            Destroy(gameObject);
-
-            EnemyFruit enemy = collision.GetComponent<EnemyFruit>();
-
         }
 
         if(collision.CompareTag("Map")){
@@ -53,5 +34,11 @@ public class Bullet : MonoBehaviour
             Destroy(gameObject);           
             
         }
+
+        if(collision.CompareTag("Cipo")){
+            Instantiate(effect, transform.position, transform.rotation);
+            Destroy(gameObject);
+            
+        } 
     }
 }

@@ -17,6 +17,8 @@ TagManager:
   - Escudo
   - batataAssada
   - ExplosaoGranada
+  - Cipo
+  - MinigunBullet
   layers:
   - Default
   - TransparentFX
